@@ -3,25 +3,20 @@ from pathlib import Path
 import fermion
 
 MODEL_NAME = "phonon-2"
-AUDIO_FILENAME = ""
-AUDIO_EXTENSIONS = {".wav", ".flac", ".mp3", ".m4a"}
 
 def find_audio_file():
     folder = Path(__file__).resolve().parent
-    if AUDIO_FILENAME:
-        path = folder / AUDIO_FILENAME
-        if not path.is_file():
-            raise FileNotFoundError(f"Audio file not found: {path}")
-        return path
-    candidates = sorted(p for p in folder.iterdir() if p.suffix.lower() in AUDIO_EXTENSIONS)
-    if not candidates:
-        raise FileNotFoundError(f"No audio file found in {folder}")
-    return candidates[0]
+    while True:
+        raw = input("Audio file path: ").strip().strip("'\"")
+        path = folder / Path(raw).expanduser()
+        if path.is_file():
+            return path
+        print(f"Not a file: {path}")
 
 def load_model():
     start = time.perf_counter()
     speech = fermion.load_speech(MODEL_NAME)
-    print(f"Model loaded in {time.perf_counter() - start:.1f} s")
+    if False: print(f"Model loaded in {time.perf_counter() - start:.1f} s")
     return speech
 
 def transcribe(speech, path):
